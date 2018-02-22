@@ -126,8 +126,10 @@ end
   theorem le_succ_of_pred_le {n m : ℕ} : pred n ≤ m → n ≤ succ m :=
   nat.cases_on n le.step (λa, succ_le_succ)
 
-  theorem not_succ_le_zero (n : ℕ) : ¬succ n ≤ 0 :=
-  sorry --by intro H; cases H
+  definition le_code (n m : ℕ) (l : succ n ≤ m) : Type₀ := nat.rec empty (λ k l, unit) m
+  definition le_encode (n m : ℕ) (l : succ n ≤ m) : le_code n m l := 
+  by induction l; repeat constructor
+  theorem not_succ_le_zero (n : ℕ) : ¬succ n ≤ 0 := le_encode n 0
 
   theorem succ_le_zero_iff_empty (n : ℕ) : succ n ≤ 0 ↔ empty :=
   iff_empty_intro !not_succ_le_zero
