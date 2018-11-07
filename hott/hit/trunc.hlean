@@ -114,7 +114,8 @@ namespace trunc
   notation `∥`:max A `∥`:0   := merely A
 
   definition Exists [reducible] [constructor] (P : X → Type) : Prop := ∥ sigma P ∥
-  definition or [reducible] [constructor] (A B : Type) : Prop := ∥ A ⊎ B ∥
+  definition or' [reducible] [constructor] (A B : Type) : Type := ∥ A ⊎ B ∥
+  definition or [reducible] [constructor] (A B : Type) : Prop := trunctype.mk (or' A B) _
 
   notation `exists` binders `,` r:(scoped P, Exists P) := r
   notation `∃` binders `,` r:(scoped P, Exists P) := r
@@ -125,6 +126,10 @@ namespace trunc
   definition exists.intro   [reducible] [constructor] (x : X) (p : P x) : ∃x, P x := tr ⟨x, p⟩
   definition or.intro_left  [reducible] [constructor] (x : X) : X ∨ Y             := tr (inl x)
   definition or.intro_right [reducible] [constructor] (y : Y) : X ∨ Y             := tr (inr y)
+
+  definition or.rec [recursor 7] {A B : Type} {C : A ∨ B → Type} [H : ∀ x, is_prop (C x)] 
+    (l: ∀ a : A, C (or.intro_left a)) (r : ∀b, C(or.intro_right b)) (x : or' A B) : C x 
+    := begin revert x, refine @trunc.rec _ _ _ H _, intro, induction a, exact l a, exact r a end
 
   definition exists.elim {A : Type} {p : A → Type} {B : Type} [is_prop B] (H : Exists p)
     (H' : ∀ (a : A), p a → B) : B :=
